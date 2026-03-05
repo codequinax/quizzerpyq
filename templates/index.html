@@ -1,0 +1,67 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container mt-5">
+  <h2 class="mb-4">📚 View PYQ Questions</h2>
+  <form method="post" action="/questions">
+    <div class="mb-3">
+      <label for="year" class="form-label">Select Year:</label>
+      <select class="form-select" name="year" id="year" required onchange="fetchSubjects()">
+        <option value="">-- Choose Year --</option>
+        <option>1st Year</option>
+        <option>2nd Year</option>
+        <option>3rd Year</option>
+        <option>4th Year</option>
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label for="subject" class="form-label">Select Subject:</label>
+      <select class="form-select" name="subject" id="subject" required onchange="fetchUnits()">
+        <option value="">-- Choose Subject --</option>
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label for="unit" class="form-label">Select Unit:</label>
+      <select class="form-select" name="unit" id="unit" required>
+        <option value="">-- Choose Unit --</option>
+      </select>
+    </div>
+
+    <button type="submit" class="btn btn-success">🎯 Show Questions</button>
+  </form>
+</div>
+
+<script>
+  async function fetchSubjects() {
+    const year = document.getElementById('year').value;
+    const res = await fetch('/get_subjects', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: `year=${encodeURIComponent(year)}`
+    });
+    const data = await res.json();
+    const subjectSelect = document.getElementById('subject');
+    subjectSelect.innerHTML = '<option value="">-- Choose Subject --</option>';
+    data.subjects.forEach(sub => {
+      subjectSelect.innerHTML += `<option value="${sub}">${sub}</option>`;
+    });
+  }
+
+  async function fetchUnits() {
+    const year = document.getElementById('year').value;
+    const subject = document.getElementById('subject').value;
+    const res = await fetch('/get_units', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: `year=${encodeURIComponent(year)}&subject=${encodeURIComponent(subject)}`
+    });
+    const data = await res.json();
+    const unitSelect = document.getElementById('unit');
+    unitSelect.innerHTML = '<option value="">-- Choose Unit --</option>';
+    data.units.forEach(unit => {
+      unitSelect.innerHTML += `<option value="${unit}">${unit}</option>`;
+    });
+  }
+</script>
+{% endblock %}
