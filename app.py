@@ -1,8 +1,8 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, url_for
 import sqlite3
 import os
 
-app = Flask(__name__)
+app = Flask(**name**)
 
 # ---------------------------------
 
@@ -10,7 +10,7 @@ app = Flask(__name__)
 
 # ---------------------------------
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+BASE_DIR = os.path.dirname(os.path.abspath(**file**))
 DB_PATH = os.path.join(BASE_DIR, "pyq.db")
 
 # ---------------------------------
@@ -40,8 +40,8 @@ for subject in subjects
 
 @app.route('/')
 def index():
-  years = list(subject_map.keys())
-  return render_template('index.html', years=years)
+years = list(subject_map.keys())
+return render_template('index.html', years=years)
 
 # ---------------------------------
 
@@ -51,9 +51,9 @@ def index():
 
 @app.route('/get_subjects', methods=['POST'])
 def get_subjects():
-  year = request.form.get('year')
-  subjects = subject_map.get(year, [])
-  return jsonify({'subjects': subjects})
+year = request.form.get('year')
+subjects = subject_map.get(year, [])
+return jsonify({'subjects': subjects})
 
 # ---------------------------------
 
@@ -63,9 +63,9 @@ def get_subjects():
 
 @app.route('/get_units', methods=['POST'])
 def get_units():
-  subject = request.form.get('subject')
-  units = unit_map.get(subject, [])
-  return jsonify({'units': units})
+subject = request.form.get('subject')
+units = unit_map.get(subject, [])
+return jsonify({'units': units})
 
 # ---------------------------------
 
@@ -76,32 +76,32 @@ def get_units():
 @app.route('/questions', methods=['POST'])
 def get_questions():
 
+```
+year = request.form['year']
+subject = request.form['subject']
+unit = request.form['unit']
 
-  year = request.form['year']
-  subject = request.form['subject']
-  unit = request.form['unit']
+conn = sqlite3.connect(DB_PATH)
+conn.row_factory = sqlite3.Row
+c = conn.cursor()
 
-  conn = sqlite3.connect(DB_PATH)
-  conn.row_factory = sqlite3.Row
-  c = conn.cursor()
-
-  c.execute("""
+c.execute("""
     SELECT question_text, question_image, answer
     FROM pyq_questions
     WHERE year=? AND subject=? AND unit=?
 """, (year, subject, unit))
 
-  rows = c.fetchall()
-  conn.close()
+rows = c.fetchall()
+conn.close()
 
-  questions = []
+questions = []
 
-  for row in rows:
+for row in rows:
 
     image_path = row['question_image']
 
-    if image_path and "static/" in image_path:
-        image_path = image_path.split("static/")[-1]
+    if image_path:
+        image_path = url_for('static', filename=image_path)
 
     questions.append({
         'text': row['question_text'],
@@ -109,14 +109,14 @@ def get_questions():
         'answer': row['answer']
     })
 
-  return render_template(
+return render_template(
     'questions.html',
     questions=questions,
     year=year,
     subject=subject,
     unit=unit
 )
-
+```
 
 # ---------------------------------
 
@@ -124,5 +124,5 @@ def get_questions():
 
 # ---------------------------------
 
-if __name__ == "__main__":
- app.run(host="0.0.0.0", port=5000, debug=True)
+if **name** == "**main**":
+app.run(host="0.0.0.0", port=5000, debug=True)
