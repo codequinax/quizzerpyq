@@ -1,8 +1,8 @@
-from flask import Flask, render_template, request, jsonify, url_for
+from flask import Flask, render_template, request, jsonify
 import sqlite3
 import os
 
-app = Flask(**name**)
+app = Flask(__name__)
 
 # ---------------------------------
 
@@ -10,7 +10,7 @@ app = Flask(**name**)
 
 # ---------------------------------
 
-BASE_DIR = os.path.dirname(os.path.abspath(**file**))
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, "pyq.db")
 
 # ---------------------------------
@@ -40,8 +40,8 @@ for subject in subjects
 
 @app.route('/')
 def index():
-years = list(subject_map.keys())
-return render_template('index.html', years=years)
+  years = list(subject_map.keys())
+  return render_template('index.html', years=years)
 
 # ---------------------------------
 
@@ -51,9 +51,9 @@ return render_template('index.html', years=years)
 
 @app.route('/get_subjects', methods=['POST'])
 def get_subjects():
-year = request.form.get('year')
-subjects = subject_map.get(year, [])
-return jsonify({'subjects': subjects})
+  year = request.form.get('year')
+  subjects = subject_map.get(year, [])
+  return jsonify({'subjects': subjects})
 
 # ---------------------------------
 
@@ -63,9 +63,9 @@ return jsonify({'subjects': subjects})
 
 @app.route('/get_units', methods=['POST'])
 def get_units():
-subject = request.form.get('subject')
-units = unit_map.get(subject, [])
-return jsonify({'units': units})
+  subject = request.form.get('subject')
+  units = unit_map.get(subject, [])
+  return jsonify({'units': units})
 
 # ---------------------------------
 
@@ -76,32 +76,32 @@ return jsonify({'units': units})
 @app.route('/questions', methods=['POST'])
 def get_questions():
 
-```
-year = request.form['year']
-subject = request.form['subject']
-unit = request.form['unit']
 
-conn = sqlite3.connect(DB_PATH)
-conn.row_factory = sqlite3.Row
-c = conn.cursor()
+  year = request.form['year']
+  subject = request.form['subject']
+  unit = request.form['unit']
 
-c.execute("""
+  conn = sqlite3.connect(DB_PATH)
+  conn.row_factory = sqlite3.Row
+  c = conn.cursor()
+
+  c.execute("""
     SELECT question_text, question_image, answer
     FROM pyq_questions
     WHERE year=? AND subject=? AND unit=?
 """, (year, subject, unit))
 
-rows = c.fetchall()
-conn.close()
+  rows = c.fetchall()
+  conn.close()
 
-questions = []
+  questions = []
 
-for row in rows:
+  for row in rows:
 
     image_path = row['question_image']
 
-    if image_path:
-        image_path = url_for('static', filename=image_path)
+    if image_path and "static/" in image_path:
+        image_path = image_path.split("static/")[-1]
 
     questions.append({
         'text': row['question_text'],
@@ -109,14 +109,14 @@ for row in rows:
         'answer': row['answer']
     })
 
-return render_template(
+  return render_template(
     'questions.html',
     questions=questions,
     year=year,
     subject=subject,
     unit=unit
 )
-```
+
 
 # ---------------------------------
 
@@ -124,5 +124,5 @@ return render_template(
 
 # ---------------------------------
 
-if **name** == "**main**":
-app.run(host="0.0.0.0", port=5000, debug=True)
+if __name__ == "__main__":
+ app.run(host="0.0.0.0", port=5000, debug=True)
