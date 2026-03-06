@@ -151,4 +151,8 @@ def get_questions():
 # ---------------------------------
 
 if __name__ == "__main__":
+<<<<<<< HEAD
     app.run(host="0.0.0.0", port=5000, debug=True)
+=======
+    app.run(host="0.0.0.0", port=5000, debug=True)
+>>>>>>> 3d97960ddd1230c33b91e82eab01904751e3fd0b

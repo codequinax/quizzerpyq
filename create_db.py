@@ -133,4 +133,8 @@ conn.close()
 print("\n---------------------------------")
 print(f"✅ Images scanned : {total_images}")
 print(f"✅ Questions in DB: {count}")
+<<<<<<< HEAD
 print("---------------------------------")
+=======
+print("---------------------------------")
+>>>>>>> 3d97960ddd1230c33b91e82eab01904751e3fd0b
