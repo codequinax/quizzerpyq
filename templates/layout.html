@@ -1,133 +1,288 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>PYQ Viewer</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <!-- Bootstrap -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<meta charset="UTF-8">
+<title>Quizzer PYQ</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<!-- Bootstrap -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-  <!-- AOS Animations -->
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+<!-- Google Font -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+<!-- FontAwesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-  <style>
-    :root {
-      --light-bg: linear-gradient(to right, #eef2ff, #e0f7fa);
-      --dark-bg: linear-gradient(to right, #1f2937, #111827);
-      --card-light: rgba(255, 255, 255, 0.9);
-      --card-dark: rgba(31, 41, 55, 0.8);
-      --text-light: #1f2937;
-      --text-dark: #f3f4f6;
-    }
+<!-- AOS -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
 
-    body {
-      font-family: 'Poppins', sans-serif;
-      background: var(--light-bg);
-      color: var(--text-light);
-      transition: background 0.4s, color 0.4s;
-    }
+<style>
 
-    .dark-mode {
-      background: var(--dark-bg);
-      color: var(--text-dark);
-    }
+/* ---------------- ROOT VARIABLES ---------------- */
 
-    .container-wrapper {
-      max-width: 960px;
-      margin: 80px auto 40px;
-      padding: 30px;
-      background-color: var(--card-light);
-      border-radius: 20px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-      transition: background 0.4s;
-    }
+:root{
+--bg-light: linear-gradient(135deg,#eef2ff,#e0f7fa,#fdf4ff);
+--bg-dark: linear-gradient(135deg,#020617,#111827);
 
-    .dark-mode .container-wrapper {
-      background-color: var(--card-dark);
-    }
+--glass-light: rgba(255,255,255,0.82);
+--glass-dark: rgba(30,41,59,0.75);
 
-    h2 {
-      font-weight: 600;
-      color: #2563eb;
-    }
+--text-light:#111827;
+--text-dark:#f3f4f6;
 
-    .dark-mode h2 {
-      color: #93c5fd;
-    }
+--primary:#2563eb;
+}
 
-    .navbar {
-      background: linear-gradient(135deg, #3b82f6, #06b6d4);
-    }
+/* ---------------- BODY ---------------- */
 
-    .navbar-brand, .nav-link {
-      color: #fff !important;
-      font-weight: 600;
-    }
+body{
+font-family:'Poppins',sans-serif;
+background:var(--bg-light);
+background-size:300% 300%;
+animation:gradientMove 18s ease infinite;
 
-    .footer {
-      text-align: center;
-      padding: 15px;
-      font-size: 0.9rem;
-      color: #6b7280;
-    }
+color:var(--text-light);
 
-    .dark-toggle {
-      border: none;
-      background: none;
-      color: white;
-      font-size: 1.4rem;
-      cursor: pointer;
-    }
+min-height:100vh;
 
-    ::selection {
-      background: #3b82f6;
-      color: #fff;
-    }
-  </style>
+transition:0.35s;
+}
+
+/* Gradient animation */
+
+@keyframes gradientMove{
+0%{background-position:0% 50%;}
+50%{background-position:100% 50%;}
+100%{background-position:0% 50%;}
+}
+
+/* ---------------- DARK MODE ---------------- */
+
+.dark-mode{
+background:var(--bg-dark);
+color:var(--text-dark);
+}
+
+/* ---------------- NAVBAR ---------------- */
+
+.navbar{
+backdrop-filter:blur(10px);
+background:rgba(37,99,235,0.9);
+padding:10px 0;
+}
+
+.navbar-brand{
+font-weight:600;
+letter-spacing:0.4px;
+font-size:1.1rem;
+}
+
+.navbar-brand i{
+color:#facc15;
+}
+
+/* ---------------- MAIN CONTAINER ---------------- */
+
+.container-wrapper{
+
+max-width:980px;
+
+margin:90px auto 40px;
+
+padding:36px;
+
+background:var(--glass-light);
+
+backdrop-filter:blur(14px);
+
+border-radius:18px;
+
+box-shadow:0 12px 35px rgba(0,0,0,0.12);
+
+transition:0.25s;
+
+}
+
+.dark-mode .container-wrapper{
+background:var(--glass-dark);
+box-shadow:0 12px 40px rgba(0,0,0,0.45);
+}
+
+/* Slight hover effect */
+
+.container-wrapper:hover{
+transform:translateY(-2px);
+}
+
+/* ---------------- HEADINGS ---------------- */
+
+h1,h2,h3{
+font-weight:600;
+color:var(--primary);
+}
+
+.dark-mode h1,
+.dark-mode h2,
+.dark-mode h3{
+color:#93c5fd;
+}
+
+/* ---------------- DARK MODE BUTTON ---------------- */
+
+.dark-toggle{
+
+border:none;
+
+background:none;
+
+font-size:1.2rem;
+
+color:white;
+
+cursor:pointer;
+
+transition:0.25s;
+
+}
+
+.dark-toggle:hover{
+transform:rotate(18deg);
+}
+
+/* ---------------- FOOTER ---------------- */
+
+.footer{
+
+text-align:center;
+
+padding:22px;
+
+font-size:0.9rem;
+
+color:#6b7280;
+
+}
+
+.dark-mode .footer{
+color:#9ca3af;
+}
+
+/* ---------------- TEXT SELECTION ---------------- */
+
+::selection{
+background:#2563eb;
+color:white;
+}
+
+/* ---------------- RESPONSIVE ---------------- */
+
+@media(max-width:768px){
+
+.container-wrapper{
+margin:80px 15px 25px;
+padding:24px;
+}
+
+}
+
+</style>
+
 </head>
 
+
 <body id="pageBody">
-  <!-- Navbar -->
-  <nav class="navbar navbar-expand-lg shadow fixed-top">
-    <div class="container">
-      <a class="navbar-brand" href="/">
-        <i class="fas fa-book-open-reader me-2"></i>PYQ Viewer
-      </a>
-      <div class="ms-auto">
-        <button class="dark-toggle" onclick="toggleDarkMode()" title="Toggle Dark Mode">
-          <i class="fas fa-moon"></i>
-        </button>
-      </div>
-    </div>
-  </nav>
 
-  <!-- Main Container -->
-  <div class="container container-wrapper" data-aos="fade-down">
-    {% block content %}{% endblock %}
-  </div>
+<!-- NAVBAR -->
 
-  <!-- Footer -->
-  <div class="footer">
-    Made with ❤️ by Quizzer Team | © 2025
-  </div>
+<nav class="navbar navbar-expand-lg shadow fixed-top">
 
-  <!-- Scripts -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
-  <script>
-    AOS.init({ once: true });
+<div class="container">
 
-    function toggleDarkMode() {
-      const body = document.getElementById('pageBody');
-      body.classList.toggle('dark-mode');
-    }
-  </script>
+<a class="navbar-brand" href="/">
+<i class="fas fa-book-open-reader me-2"></i>
+Quizzer PYQ
+</a>
+
+<div class="ms-auto">
+
+<button class="dark-toggle" onclick="toggleDarkMode()">
+<i class="fas fa-moon"></i>
+</button>
+
+</div>
+
+</div>
+
+</nav>
+
+
+<!-- MAIN CONTENT -->
+
+<div class="container container-wrapper" data-aos="fade-up">
+
+{% block content %}{% endblock %}
+
+</div>
+
+
+<!-- FOOTER -->
+
+<div class="footer">
+
+Made with ❤️ for students • Quizzer PYQ © 2026
+
+</div>
+
+
+<!-- JS LIBRARIES -->
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+
+
+<script>
+
+/* AOS animation init */
+
+AOS.init({
+once:true,
+duration:700
+})
+
+
+/* DARK MODE TOGGLE */
+
+function toggleDarkMode(){
+
+let body=document.getElementById("pageBody")
+
+body.classList.toggle("dark-mode")
+
+if(body.classList.contains("dark-mode")){
+localStorage.setItem("theme","dark")
+}
+else{
+localStorage.setItem("theme","light")
+}
+
+}
+
+
+/* LOAD SAVED THEME */
+
+window.onload=function(){
+
+let savedTheme=localStorage.getItem("theme")
+
+if(savedTheme==="dark"){
+document.getElementById("pageBody").classList.add("dark-mode")
+}
+
+}
+
+</script>
+
 </body>
 </html>

@@ -1,193 +1,462 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Questions - {{ year }} {{ subject }} {{ unit }}</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- Bootstrap -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<meta charset="UTF-8">
+<title>{{ year }} {{ subject }} {{ unit }} | Quizzer PYQ</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-  <!-- AOS -->
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 
-  <style>
-    body {
-      font-family: 'Poppins', sans-serif;
-      background: linear-gradient(to right, #f0f4ff, #e2f7f6);
-      padding: 2rem;
-    }
+<style>
 
-    .card {
-      border-radius: 20px;
-      backdrop-filter: blur(10px);
-      background-color: rgba(255, 255, 255, 0.9);
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-      padding: 30px;
-      display: none;
-    }
+body{
+font-family:'Poppins',sans-serif;
+background:linear-gradient(135deg,#eef2ff,#e0f7fa);
+padding:20px;
+}
 
-    .card.active {
-      display: block;
-      animation: fadeIn 0.4s ease-in-out;
-    }
+/* Header */
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+.header-title{
+font-weight:600;
+color:#2563eb;
+text-align:center;
+margin-bottom:20px;
+}
 
-    .btn-custom {
-      border-radius: 12px;
-      font-weight: 600;
-      padding: 0.6rem 1.5rem;
-      transition: 0.3s ease;
-    }
+/* Toolbar */
 
-    .btn-custom:hover {
-      transform: scale(1.05);
-    }
+.toolbar{
 
-    h2 {
-      font-weight: 600;
-      color: #2563eb;
-    }
+background:white;
 
-    .answer {
-      display: none;
-      margin-top: 10px;
-      font-weight: 500;
-    }
+border-radius:14px;
 
-    img {
-      max-height: 350px;
-      object-fit: contain;
-      border-radius: 10px;
-      margin: 15px 0;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.15);
-    }
+padding:12px 18px;
 
-    .question-counter {
-      font-size: 14px;
-      font-weight: 500;
-      color: #6b7280;
-    }
-  </style>
+box-shadow:0 6px 20px rgba(0,0,0,0.1);
+
+display:flex;
+
+flex-wrap:wrap;
+
+align-items:center;
+
+gap:10px;
+
+justify-content:space-between;
+
+margin-bottom:20px;
+
+}
+
+/* Progress */
+
+.progress{
+height:8px;
+border-radius:10px;
+flex-grow:1;
+margin:0 15px;
+}
+
+/* Question card */
+
+.question-card{
+
+background:white;
+
+border-radius:18px;
+
+padding:30px;
+
+box-shadow:0 10px 25px rgba(0,0,0,0.1);
+
+display:none;
+
+}
+
+.question-card.active{
+display:block;
+}
+
+/* Image */
+
+.question-img{
+
+max-height:420px;
+
+object-fit:contain;
+
+border-radius:10px;
+
+margin-top:15px;
+
+box-shadow:0 5px 15px rgba(0,0,0,0.15);
+
+cursor:zoom-in;
+
+transition:0.3s;
+
+}
+
+.question-img.zoom{
+transform:scale(1.6);
+cursor:zoom-out;
+}
+
+/* Answer */
+
+.answer{
+
+display:none;
+
+margin-top:15px;
+
+font-weight:500;
+
+background:#f1f5f9;
+
+padding:12px;
+
+border-radius:8px;
+
+}
+
+/* Bottom navigation */
+
+.nav-controls{
+
+margin-top:25px;
+
+text-align:center;
+
+}
+
+</style>
+
 </head>
 
 <body>
-  <div class="container">
 
-    <h2 class="mb-4 text-center" data-aos="zoom-in">
-      📘 Questions for {{ year }} - {{ subject }} - {{ unit }}
-    </h2>
+<div class="container">
 
-    {% if questions %}
-      {% for q in questions %}
-        <div class="card shadow question-card" id="question-{{ loop.index0 }}">
-          <div class="card-body">
+<h3 class="header-title">
+📘 {{ year }} • {{ subject }} • {{ unit }}
+</h3>
 
-            <div class="question-counter mb-2">
-              Question {{ loop.index }} of {{ questions|length }}
-            </div>
 
-            {% if q.text %}
-              <p class="card-text">
-                <strong>Q{{ loop.index }}:</strong> {{ q.text }}
-              </p>
-            {% endif %}
+{% if questions %}
 
-            {% if q.image %}
-              <img src="{{ url_for('static', filename=q.image) }}"
-                   class="img-fluid"
-                   alt="Question Image">
-            {% endif %}
+<!-- TOP TOOLBAR -->
 
-            {% if q.answer %}
-              <button class="btn btn-success btn-sm btn-custom mt-2"
-                      onclick="toggleAnswer({{ loop.index0 }})">
-                👁️ Show Answer
-              </button>
+<div class="toolbar">
 
-              <p class="answer" id="answer-{{ loop.index0 }}">
-                <strong>Answer:</strong> {{ q.answer }}
-              </p>
-            {% endif %}
+<div>
 
-          </div>
-        </div>
-      {% endfor %}
+<span id="questionCounter">
+Question 1 / {{ questions|length }}
+</span>
 
-      <!-- Navigation Controls -->
-      <div class="text-center mt-4">
-        <button id="prevBtn" class="btn btn-secondary btn-custom me-2"
-                onclick="prevQuestion()" disabled>
-          ⬅️ Previous
-        </button>
+</div>
 
-        <button id="nextBtn" class="btn btn-primary btn-custom"
-                onclick="nextQuestion()">
-          ➡️ Next
-        </button>
-      </div>
+<div class="progress">
 
-    {% else %}
-      <p class="text-danger fs-5 text-center">
-        ❌ No questions found for this selection.
-      </p>
-    {% endif %}
+<div id="progressBar"
+class="progress-bar bg-primary"
+style="width:0%">
+</div>
 
-    <div class="text-center mt-4">
-      <a href="/" class="btn btn-outline-dark">⬅️ Back</a>
-    </div>
+</div>
 
-  </div>
+<div>
 
-  <!-- Scripts -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+<button class="btn btn-sm btn-success"
+onclick="toggleAnswer(current)">
+Show Answer
+</button>
 
-  <script>
-    AOS.init({ once: true });
+<button class="btn btn-sm btn-warning"
+onclick="bookmarkQuestion(current)">
+⭐ Bookmark
+</button>
 
-    const questions = document.querySelectorAll('.question-card');
-    let current = 0;
+<button class="btn btn-sm btn-dark"
+onclick="toggleFullscreen()">
+Fullscreen
+</button>
 
-    function showQuestion(index) {
-      questions.forEach(q => q.classList.remove('active'));
-      questions[index].classList.add('active');
+</div>
 
-      document.getElementById('prevBtn').disabled = index === 0;
-      document.getElementById('nextBtn').disabled = index === questions.length - 1;
-    }
+<div>
 
-    function nextQuestion() {
-      if (current < questions.length - 1) {
-        current++;
-        showQuestion(current);
-      }
-    }
+Jump
 
-    function prevQuestion() {
-      if (current > 0) {
-        current--;
-        showQuestion(current);
-      }
-    }
+<input type="number"
+id="jumpInput"
+min="1"
+max="{{ questions|length }}"
+style="width:70px">
 
-    function toggleAnswer(index) {
-      const ans = document.getElementById(`answer-${index}`);
-      ans.style.display = ans.style.display === 'block' ? 'none' : 'block';
-    }
+<button class="btn btn-sm btn-primary"
+onclick="jumpQuestion()">
+Go
+</button>
 
-    // Initialize first question
-    if (questions.length > 0) {
-      showQuestion(0);
-    }
-  </script>
+</div>
+
+</div>
+
+
+<!-- QUESTIONS -->
+
+{% for q in questions %}
+
+<div class="question-card"
+id="question-{{ loop.index0 }}">
+
+<div class="mb-2 text-muted">
+
+Question {{ loop.index }} of {{ questions|length }}
+
+</div>
+
+{% if q.text %}
+
+<p>
+
+<strong>Q{{ loop.index }}:</strong> {{ q.text }}
+
+</p>
+
+{% endif %}
+
+{% if q.image %}
+
+<img src="{{ url_for('static', filename=q.image) }}"
+class="img-fluid question-img"
+onclick="zoomImage(this)">
+
+{% endif %}
+
+{% if q.answer %}
+
+<div class="answer"
+id="answer-{{ loop.index0 }}">
+
+<strong>Answer:</strong> {{ q.answer }}
+
+</div>
+
+{% endif %}
+
+</div>
+
+{% endfor %}
+
+
+<!-- NAVIGATION -->
+
+<div class="nav-controls">
+
+<button id="prevBtn"
+class="btn btn-secondary me-2"
+onclick="prevQuestion()"
+disabled>
+
+⬅ Previous
+
+</button>
+
+<button id="nextBtn"
+class="btn btn-primary"
+onclick="nextQuestion()">
+
+Next ➡
+
+</button>
+
+</div>
+
+
+{% else %}
+
+<p class="text-danger text-center">
+No questions found
+</p>
+
+{% endif %}
+
+
+<div class="text-center mt-4">
+
+<a href="/" class="btn btn-outline-dark">
+
+⬅ Back
+
+</a>
+
+</div>
+
+</div>
+
+
+<script>
+
+const questions=document.querySelectorAll(".question-card")
+
+let current=0
+
+
+function showQuestion(i){
+
+questions.forEach(q=>q.classList.remove("active"))
+
+questions[i].classList.add("active")
+
+document.getElementById("prevBtn").disabled=i===0
+
+document.getElementById("nextBtn").disabled=i===questions.length-1
+
+document.getElementById("questionCounter").innerText=`Question ${i+1} / ${questions.length}`
+
+updateProgress()
+
+}
+
+
+function nextQuestion(){
+
+if(current<questions.length-1){
+
+current++
+
+showQuestion(current)
+
+}
+
+}
+
+
+function prevQuestion(){
+
+if(current>0){
+
+current--
+
+showQuestion(current)
+
+}
+
+}
+
+
+/* progress */
+
+function updateProgress(){
+
+let percent=((current+1)/questions.length)*100
+
+document.getElementById("progressBar").style.width=percent+"%"
+
+}
+
+
+/* answer */
+
+function toggleAnswer(i){
+
+let ans=document.getElementById(`answer-${i}`)
+
+ans.style.display=ans.style.display==="block"?"none":"block"
+
+}
+
+
+/* bookmark */
+
+function bookmarkQuestion(i){
+
+let bookmarks=JSON.parse(localStorage.getItem("bookmarks")||"[]")
+
+if(!bookmarks.includes(i)){
+
+bookmarks.push(i)
+
+localStorage.setItem("bookmarks",JSON.stringify(bookmarks))
+
+alert("Bookmarked!")
+
+}
+
+}
+
+
+/* jump */
+
+function jumpQuestion(){
+
+let n=document.getElementById("jumpInput").value
+
+if(n>=1 && n<=questions.length){
+
+current=n-1
+
+showQuestion(current)
+
+}
+
+}
+
+
+/* zoom */
+
+function zoomImage(img){
+
+img.classList.toggle("zoom")
+
+}
+
+
+/* fullscreen */
+
+function toggleFullscreen(){
+
+if(!document.fullscreenElement){
+
+document.documentElement.requestFullscreen()
+
+}else{
+
+document.exitFullscreen()
+
+}
+
+}
+
+
+/* keyboard shortcuts */
+
+document.addEventListener("keydown",function(e){
+
+if(e.key==="ArrowRight") nextQuestion()
+
+if(e.key==="ArrowLeft") prevQuestion()
+
+if(e.key==="a") toggleAnswer(current)
+
+})
+
+
+if(questions.length>0){
+
+showQuestion(0)
+
+}
+
+</script>
 
 </body>
 </html>

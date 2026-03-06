@@ -5,124 +5,150 @@ import os
 app = Flask(__name__)
 
 # ---------------------------------
-
 # DATABASE PATH
-
 # ---------------------------------
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, "pyq.db")
 
-# ---------------------------------
-
-# SUBJECT & UNIT MAP
 
 # ---------------------------------
-
-subject_map = {
-'1st Year': ['Maths', 'Physics', 'PPS', 'Electrical', 'Mechanical', 'Chemistry', 'Workshop', 'English', 'Graphics', 'EVS'],
-'2nd Year': ['DBMS', 'OS', 'DSA', 'CN', 'Maths', 'Software Engg', 'COA', 'OOPs', 'AI', 'ML'],
-'3rd Year': ['BCAI051', 'Compiler', 'DAA', 'Web Tech', 'Cloud', 'Big Data', 'IOT', 'Python', 'Mobile Dev', 'Security'],
-'4th Year': ['Project', 'Seminar', 'Internship', 'Management', 'Ethics', 'BlockChain', 'DevOps', 'Deep Learning', 'AR/VR', 'Robotics']
-}
-
-unit_map = {
-subject: [f'Unit {i}' for i in range(1, 6)]
-for subjects in subject_map.values()
-for subject in subjects
-}
-
+# DATABASE CONNECTION
 # ---------------------------------
 
-# HOME
+def get_db():
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    return conn
 
+
+# ---------------------------------
+# HOME PAGE
 # ---------------------------------
 
 @app.route('/')
 def index():
-  years = list(subject_map.keys())
-  return render_template('index.html', years=years)
+
+    conn = get_db()
+    c = conn.cursor()
+
+    c.execute("SELECT DISTINCT year FROM pyq_questions ORDER BY year")
+    years = [row["year"] for row in c.fetchall()]
+
+    conn.close()
+
+    return render_template("index.html", years=years)
+
 
 # ---------------------------------
-
 # GET SUBJECTS
-
 # ---------------------------------
 
 @app.route('/get_subjects', methods=['POST'])
 def get_subjects():
-  year = request.form.get('year')
-  subjects = subject_map.get(year, [])
-  return jsonify({'subjects': subjects})
+
+    year = request.form.get("year").strip()
+
+    conn = get_db()
+    c = conn.cursor()
+
+    c.execute("""
+        SELECT DISTINCT subject
+        FROM pyq_questions
+        WHERE LOWER(year) = LOWER(?)
+        ORDER BY subject
+    """, (year,))
+
+    subjects = [row["subject"] for row in c.fetchall()]
+
+    conn.close()
+
+    return jsonify({"subjects": subjects})
+
 
 # ---------------------------------
-
 # GET UNITS
-
 # ---------------------------------
 
 @app.route('/get_units', methods=['POST'])
 def get_units():
-  subject = request.form.get('subject')
-  units = unit_map.get(subject, [])
-  return jsonify({'units': units})
+
+    year = request.form.get("year").strip()
+    subject = request.form.get("subject").strip()
+
+    conn = get_db()
+    c = conn.cursor()
+
+    c.execute("""
+        SELECT DISTINCT unit
+        FROM pyq_questions
+        WHERE LOWER(year)=LOWER(?)
+        AND LOWER(subject)=LOWER(?)
+        ORDER BY unit
+    """, (year, subject))
+
+    units = [row["unit"] for row in c.fetchall()]
+
+    conn.close()
+
+    return jsonify({"units": units})
+
 
 # ---------------------------------
-
 # GET QUESTIONS
-
 # ---------------------------------
 
 @app.route('/questions', methods=['POST'])
 def get_questions():
 
+    year = request.form.get("year").strip()
+    subject = request.form.get("subject").strip()
+    unit = request.form.get("unit").strip()
 
-  year = request.form['year']
-  subject = request.form['subject']
-  unit = request.form['unit']
+    conn = get_db()
+    c = conn.cursor()
 
-  conn = sqlite3.connect(DB_PATH)
-  conn.row_factory = sqlite3.Row
-  c = conn.cursor()
+    c.execute("""
+        SELECT question_text, question_image, answer
+        FROM pyq_questions
+        WHERE LOWER(year)=LOWER(?)
+        AND LOWER(subject)=LOWER(?)
+        AND LOWER(unit)=LOWER(?)
+        ORDER BY id
+    """, (year, subject, unit))
 
-  c.execute("""
-    SELECT question_text, question_image, answer
-    FROM pyq_questions
-    WHERE year=? AND subject=? AND unit=?
-""", (year, subject, unit))
+    rows = c.fetchall()
 
-  rows = c.fetchall()
-  conn.close()
+    conn.close()
 
-  questions = []
+    questions = []
 
-  for row in rows:
+    for row in rows:
 
-    image_path = row['question_image']
+        image_path = row["question_image"]
 
-    if image_path and "static/" in image_path:
-        image_path = image_path.split("static/")[-1]
+        # ensure correct static path
+        if image_path.startswith("static/"):
+            image_path = image_path.replace("static/", "")
 
-    questions.append({
-        'text': row['question_text'],
-        'image': image_path,
-        'answer': row['answer']
-    })
+        questions.append({
+            "text": row["question_text"],
+            "image": image_path,
+            "answer": row["answer"]
+        })
 
-  return render_template(
-    'questions.html',
-    questions=questions,
-    year=year,
-    subject=subject,
-    unit=unit
-)
+    return render_template(
+        "questions.html",
+        questions=questions,
+        year=year,
+        subject=subject,
+        unit=unit
+    )
 
 
 # ---------------------------------
-
-# RUN
-
+# RUN SERVER
 # ---------------------------------
 
 if __name__ == "__main__":
- app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=True)
